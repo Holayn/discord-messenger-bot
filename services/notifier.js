@@ -12,15 +12,21 @@ client.once(Events.ClientReady, async readyClient => {
 
 client.login(process.env.BOT_TOKEN);
 
-async function notify(message) {
-  if (!process.env.USER_ID) {
-    throw new Error('No user id specified.');
+async function notify(message, user) {
+  if (!user) {
+    throw new Error('No user provided');
+  }
+  if (!process.env[user]) {
+    throw new Error(`No user id specified for ${user}.`);
   }
 
   try {
-    const user = await client.users.fetch(process.env.USER_ID);
-    await user.send(message);
-    logger.info(`Sent message to ${user.id}: ${message}`);
+    const discordUser = await client.users.fetch(process.env[user]);
+    if (!discordUser) {
+      throw new Error(`No Discord user found for ${user} (${process.env[user]})`);
+    }
+    await discordUser.send(message);
+    logger.info(`Sent message to ${discordUser.id}: ${message}`);
   } catch (err) {
     logger.error(err);
   }
