@@ -12,10 +12,7 @@ client.once(Events.ClientReady, async readyClient => {
 
 client.login(process.env.BOT_TOKEN);
 
-async function notify(message, user) {
-  if (!user) {
-    throw new Error('No user provided');
-  }
+async function notify(message, user = process.env.DEFAULT_USER) {
   if (!process.env[user]) {
     throw new Error(`No user id specified for ${user}.`);
   }
