@@ -3,7 +3,11 @@ require('winston-daily-rotate-file');
 require('dotenv').config();
 
 const infoAndWarnFilter = format((info, opts) => {
-  return info.level === "info" || info.level === "warn" ? info : false;
+  return info.level === 'info' || info.level === 'warn' ? info : false;
+});
+
+const httpOnlyFilter = format((info, opts) => {
+  return info.level === 'http' ? info : false;
 });
 
 class Logger {
@@ -45,6 +49,7 @@ class Logger {
           level: 'error',
           maxSize: '20m',
           maxFiles: '14d',
+          zippedArchive: true, 
         }),
         new transports.DailyRotateFile({ 
           filename: `./log/%DATE%-info.log`,
@@ -52,11 +57,15 @@ class Logger {
           maxSize: '20m',
           maxFiles: '14d',
           format: format.combine(infoAndWarnFilter(), format.timestamp()),
+          zippedArchive: true, 
         }),
         new transports.DailyRotateFile({ 
-          filename: `./log/%DATE%.log`,
+          filename: `./log/%DATE%-requests.log`,
+          level: 'http',
           maxSize: '20m',
           maxFiles: '14d',
+          format: format.combine(httpOnlyFilter(), format.timestamp()),
+          zippedArchive: true,
         }),
       ],
     });

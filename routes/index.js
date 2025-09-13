@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../services/logger');
 
 const notifier = require('../services/notifier');
 
@@ -10,6 +11,7 @@ router.post('/notify', async (req, res) => {
     res.sendStatus(200);
   }
   catch (e) {
+    logger.error(e);
     res.sendStatus(400);
   }
 });
