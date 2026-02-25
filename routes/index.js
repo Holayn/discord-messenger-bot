@@ -6,14 +6,11 @@ const notifier = require('../services/notifier');
 const router = express.Router();
 
 router.post('/notify', async (req, res) => {
-  try {
-    await notifier.notify(req.body.message, req.body.user);
-    res.sendStatus(200);
+  const result = await notifier.notify(req.body.message, req.body.user);
+  if (result.error) {
+    return res.status(400).send(result.message);
   }
-  catch (e) {
-    logger.error(e);
-    res.sendStatus(400);
-  }
+  return res.sendStatus(200);
 });
 
 module.exports = router;
