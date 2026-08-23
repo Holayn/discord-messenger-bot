@@ -1,0 +1,22 @@
+{
+  "name": "kai-discord-sender",
+  "version": "1.0.0",
+  "description": "Minimal wrapper around discord.js for sending Discord DMs from a single persistent bot connection.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "prepack": "npm run build",
+    "pack": "npm pack"
+  },
+  "dependencies": {
+    "discord.js": "^14.27.0"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

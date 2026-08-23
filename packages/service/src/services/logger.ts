@@ -1,45 +1,44 @@
-const { createLogger, format, transports } = require('winston');
-require('winston-daily-rotate-file');
-require('dotenv').config();
+import { createLogger, format, transports, type Logger as WinstonLogger } from 'winston';
+import 'winston-daily-rotate-file';
 
-const infoAndWarnFilter = format((info, opts) => {
+const infoAndWarnFilter = format((info) => {
   return info.level === 'info' || info.level === 'warn' ? info : false;
 });
 
-const httpOnlyFilter = format((info, opts) => {
+const httpOnlyFilter = format((info) => {
   return info.level === 'http' ? info : false;
 });
 
 class Logger {
-  _logger;
+  private _logger?: WinstonLogger;
 
-  info(message, data) {
+  info(message: string): void {
     if (!this._logger) { throw new Error('Logger not initialized!'); }
 
-    this._logger.info(message, data);
+    this._logger.info(message);
   }
 
-  http(message, data) {
+  http(message: string): void {
     if (!this._logger) { throw new Error('Logger not initialized!'); }
 
-    this._logger.http(message, data);
+    this._logger.http(message);
   }
 
-  error(message, data) {
+  error(message: unknown): void {
     if (!this._logger) { throw new Error('Logger not initialized!'); }
 
-    this._logger.error(message, data);
+    this._logger.error(message);
   }
 
-  init() {
+  init(): void {
     this._logger = createLogger({
       level: 'http',
       format: format.combine(
         format.errors({ stack: true }),
-        format.timestamp(), 
+        format.timestamp(),
         format.align(),
         format.printf(({ level, message, timestamp, stack, ...meta }) => {
-          return `${timestamp} ${level}: ${message}${Object.keys(meta).length ? ` - ${JSON.stringify(meta)}` : ''}${stack ? `\n${stack}` : ''}`
+          return `${timestamp} ${level}: ${message}${Object.keys(meta).length ? ` - ${JSON.stringify(meta)}` : ''}${stack ? `\n${stack}` : ''}`;
         }),
       ),
       transports: [
@@ -49,17 +48,17 @@ class Logger {
           level: 'error',
           maxSize: '20m',
           maxFiles: '14d',
-          zippedArchive: true, 
+          zippedArchive: true,
         }),
-        new transports.DailyRotateFile({ 
+        new transports.DailyRotateFile({
           filename: `./log/%DATE%-info.log`,
           level: 'info',
           maxSize: '20m',
           maxFiles: '14d',
           format: format.combine(infoAndWarnFilter(), format.timestamp()),
-          zippedArchive: true, 
+          zippedArchive: true,
         }),
-        new transports.DailyRotateFile({ 
+        new transports.DailyRotateFile({
           filename: `./log/%DATE%-requests.log`,
           level: 'http',
           maxSize: '20m',
@@ -72,4 +71,4 @@ class Logger {
   }
 }
 
-module.exports = new Logger(); 
+export default new Logger();

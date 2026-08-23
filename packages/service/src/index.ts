@@ -1,14 +1,15 @@
-const cors = require('cors');
-const express = require('express');
-const helmet = require('helmet');
-const morgan = require('morgan');
+import cors from 'cors';
+import express, { type NextFunction, type Request, type Response } from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
 
-require('dotenv').config();
+import 'dotenv/config';
 
-const logger = require('./services/logger');
-logger.init(true);
+import logger from './services/logger';
 
-const routes = require('./routes');
+logger.init();
+
+import routes from './routes';
 
 const app = express();
 
@@ -19,23 +20,23 @@ app.use(express.urlencoded({ extended: true }));
 
 const morganMiddleware = morgan(
   ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"',
-  { 
+  {
     stream: {
-      write: (message) => logger.http(message.split('\n').join('')),
-    }
+      write: (message: string) => logger.http(message.split('\n').join('')),
+    },
   },
 );
 app.use(morganMiddleware);
 
 app.use('/api', routes);
 
-app.use((err, req, res, next) => {
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   logger.error(err);
   res.sendStatus(500);
   next();
 });
 
 const port = process.env.PORT || 8000;
-app.listen(process.env.PORT || 8000, () => {
+app.listen(port, () => {
   console.info(`Listening on ${port}`);
 });
