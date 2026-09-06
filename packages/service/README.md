@@ -8,6 +8,8 @@ Ensure a `.env` file is created in this directory (see `sample.env`).
 
 `DEFAULT_DISCORD_USER_ID` is used when `POST /api/notify` is called without a `user`.
 
+`ALIASES` maps friendly names to Discord user ids, as comma-separated `alias:id` pairs, e.g. `ALIASES=kai:12341235123,foo:98765`. Pass `user: "kai"` to notify by alias. If `user` doesn't match an alias, it's used directly as the Discord user id.
+
 ## Running
 
 From the repo root:
@@ -27,7 +29,7 @@ Request body:
 | Field     | Type     | Required | Description                                                                |
 | --------- | -------- | -------- | -------------------------------------------------------------------------- |
 | `message` | `string` | yes      | The DM content to send.                                                    |
-| `user`    | `string` | no       | Discord user id to DM. Falls back to `DEFAULT_DISCORD_USER_ID` if omitted. |
+| `user`    | `string` | no       | Discord user id, or an alias from `ALIASES`, to DM. Falls back to `DEFAULT_DISCORD_USER_ID` if omitted. |
 
 Responses:
 
